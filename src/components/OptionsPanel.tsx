@@ -33,6 +33,7 @@ export const OptionsPanel: React.FC<OptionsPanelProps> = ({
     <Dialog>
       <DialogTrigger asChild>
         <Button
+          aria-label="Response options"
           variant="ghost"
           size="sm"
           className="group flex items-center space-x-2 hover:bg-amber-200/30 hover:text-amber-900 transition-colors text-amber-800 px-3 py-2"
@@ -41,11 +42,11 @@ export const OptionsPanel: React.FC<OptionsPanelProps> = ({
           <span className="hidden sm:inline text-sm font-medium">Options</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-amber-100/5 backdrop-blur-md border-amber-200/20">
+      <DialogContent className="bg-amber-50 border-amber-200 max-h-[90dvh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-amber-800 flex items-center space-x-2">
             <Settings className="w-5 h-5" />
-            <span>Request Options</span>
+            <span>Demo response options</span>
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 sm:space-y-6 py-2 sm:py-4">
@@ -55,6 +56,7 @@ export const OptionsPanel: React.FC<OptionsPanelProps> = ({
               <span>Response Length</span>
             </label>
             <Select
+              aria-label="Response length"
               value={options.responseLength}
               onChange={(e) =>
                 handleOptionChange("responseLength", e.target.value)
@@ -70,17 +72,18 @@ export const OptionsPanel: React.FC<OptionsPanelProps> = ({
           <div className="space-y-2">
             <label className="flex items-center space-x-2 text-sm font-medium text-amber-800">
               <FileText className="w-4 h-4 text-amber-600 flex-shrink-0" />
-              <span>Model Choice</span>
+              <span>Preset label (no model connected)</span>
             </label>
             <Select
+              aria-label="Preset label"
               value={options.model}
               onChange={(e) => handleOptionChange("model", e.target.value)}
               className="w-full text-sm"
             >
-              <option value="gpt-4">GPT-4 (Most Capable)</option>
-              <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fast)</option>
-              <option value="claude-3">Claude-3 (Creative)</option>
-              <option value="gemini-pro">Gemini Pro (Multimodal)</option>
+              <option value="gpt-4">GPT-4 label (simulation)</option>
+              <option value="gpt-3.5-turbo">GPT-3.5 label (simulation)</option>
+              <option value="claude-3">Claude label (simulation)</option>
+              <option value="gemini-pro">Gemini label (simulation)</option>
             </Select>
           </div>
 
@@ -90,6 +93,7 @@ export const OptionsPanel: React.FC<OptionsPanelProps> = ({
               <span>Tone</span>
             </label>
             <Select
+              aria-label="Tone"
               value={options.tone}
               onChange={(e) => handleOptionChange("tone", e.target.value)}
               className="w-full text-sm"
@@ -105,10 +109,11 @@ export const OptionsPanel: React.FC<OptionsPanelProps> = ({
             <label className="flex items-center space-x-2 text-sm font-medium text-amber-800">
               <span className="w-4 h-4 text-amber-600 flex-shrink-0">🌡️</span>
               <span className="truncate">
-                Temperature: {options.temperature}
+                Temperature (display only): {options.temperature}
               </span>
             </label>
             <Slider
+              aria-label="Temperature (display only)"
               type="range"
               min="0"
               max="1"
@@ -131,6 +136,7 @@ export const OptionsPanel: React.FC<OptionsPanelProps> = ({
               <span>Reading Level</span>
             </label>
             <Select
+              aria-label="Reading level"
               value={options.readingLevel}
               onChange={(e) =>
                 handleOptionChange("readingLevel", e.target.value)
@@ -149,6 +155,7 @@ export const OptionsPanel: React.FC<OptionsPanelProps> = ({
               <span className="truncate">Include Outline</span>
             </label>
             <Switch
+              aria-label="Include outline"
               checked={options.includeOutline}
               onChange={(e) =>
                 handleOptionChange("includeOutline", e.target.checked)

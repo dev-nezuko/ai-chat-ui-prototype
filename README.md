@@ -1,148 +1,54 @@
-## AI Chat Interface (Single-Page React App)
+# Local chat UI prototype
 
-A modern, single‑page chat UI built with React and Vite. It lets you type messages, receive scripted responses (no real API calls), and control response behavior with adjustable options like response length, model choice, tone, temperature, reading level, and an include‑outline toggle. It also supports attaching files to influence the generated response.
+A React/TypeScript interface for exploring chat interactions without a model service. Send messages, adjust response options, attach filenames and read scripted Markdown replies. The value here is the interface flow; the responses are templates, not AI inference or factual answers.
 
-### Objective
-- Build a polished chat interface for interacting with a chatbot, customizing responses, and handling file attachments, without requiring any API keys or network calls.
+![Desktop chat using synthetic messages](docs/screenshots/desktop.png)
 
-### Tech Stack and Rationale
-- **React + TypeScript**: Component-based UI with type safety for maintainability.
-- **Vite**: Fast dev server and lean production builds.
-- **Tailwind CSS**: Utility-first styling for rapid iteration and consistent design.
-- **Radix UI primitives**: Accessible, composable building blocks for controls (dialog, select, slider, switch) used via the components in `src/components/ui`.
-- **Framer Motion**: Smooth micro‑interactions and transitions.
-- **Lucide Icons**: Crisp, lightweight icon set.
-- **React Markdown + remark-gfm**: Rich rendering of AI responses including code blocks and lists.
+[390px mobile preview](docs/screenshots/mobile.png)
 
+## Try it
 
-## 1. Basic Introduction and Objective
+Use Node 22.22+ and Yarn 1.22 with the committed lockfile:
 
-This application is a streamlined chat interface demonstrating a typical AI assistant UX. Messages are exchanged in a single page; user inputs are processed locally to produce a scripted AI response that mimics real behavior. Users can:
-- **Send messages** using a composer with Enter to send and Shift+Enter for new lines.
-- **Attach files** (up to 5, 10MB each) via drag‑and‑drop or the file picker.
-- **Customize responses** using an options panel (Response Length, Model Choice, Tone, Temperature, Reading Level, Include Outline).
-
-There are no real network requests or API keys. The logic resides in `AIAgent`, which returns a response based on the message content, current options, and attachments.
-
-
-## 2. Directory and File Structure
-
-Project layout:
-
-```text
-AI Chat Interface/
-  ├─ dist/                      # Production build (output of `vite build`)
-  │  └─ assets/                 # Built assets
-  ├─ index.html                 # Root HTML for Vite
-  ├─ package.json               # Scripts and dependencies
-  ├─ postcss.config.js          # PostCSS config
-  ├─ public/                    # Static assets served as‑is
-  ├─ src/                       # Application source
-  │  ├─ App.tsx                 # Root app component and chat logic
-  │  ├─ assets/                 # App images and icons
-  │  ├─ components/             # Reusable UI + chat components
-  │  │  ├─ FileAttachment.tsx
-  │  │  ├─ MarkdownRenderer.tsx
-  │  │  ├─ MessageBubble.tsx
-  │  │  ├─ MessageComposer.tsx
-  │  │  ├─ OptionsPanel.tsx
-  │  │  └─ ui/                  # Radix-based primitives (button, select, etc.)
-  │  ├─ index.css               # Global styles (Tailwind)
-  │  ├─ lib/                    # App logic and utilities
-  │  │  ├─ aiAgent.ts           # Scripted response generator
-  │  │  └─ utils.ts             # Helpers (formatting, classNames)
-  │  ├─ main.tsx                # App bootstrap (React root)
-  │  └─ types/                  # Shared TypeScript types
-  │     └─ index.ts
-  ├─ tailwind.config.js         # Tailwind config
-  ├─ tsconfig*.json             # TypeScript configs
-  ├─ vite.config.ts             # Vite configuration
-  └─ yarn.lock                  # Locked dependency versions (Yarn)
+```sh
+yarn install --frozen-lockfile --ignore-scripts
+yarn dev --host 127.0.0.1
 ```
 
-Key directories and files:
+No environment variables, account or API key are needed. For a production build and local preview:
 
-| Path | Purpose |
-| ---- | ------- |
-| `src/App.tsx` | Top-level component: message state, typing indicator, options panel wiring, and response flow. |
-| `src/components/MessageComposer.tsx` | Input box, Enter-to-send, Shift+Enter for newline, drag‑and‑drop and picker for attachments. |
-| `src/components/MessageBubble.tsx` | Renders user and AI bubbles; AI content via `MarkdownRenderer`. |
-| `src/components/OptionsPanel.tsx` | Dialog with controls for response length, model, tone, temperature, reading level, and include outline. |
-| `src/components/FileAttachment.tsx` | Small pill UI for attached files with size and remove action. |
-| `src/components/MarkdownRenderer.tsx` | GFM‑aware Markdown rendering with inline/blocked code styling. |
-| `src/components/ui/*` | Radix‑styled building blocks (button, select, slider, switch, dialog, etc.). |
-| `src/lib/aiAgent.ts` | Scripted response generator: infers style and composes content based on options and attachments. |
-| `src/lib/utils.ts` | Utilities (file size/time formatting, class name merging). |
-| `src/types/index.ts` | Shared types: `Message`, `ChatOptions`, `AIResponse`, `FileAttachment`. |
-| `vite.config.ts` | Vite config with React plugin. |
-| `tailwind.config.js`, `postcss.config.js` | Tailwind and PostCSS configuration. |
+```sh
+yarn build
+yarn preview --host 127.0.0.1
+yarn lint
+```
 
+## Interactions worth exploring
 
-## 3. Local Setup Guide
+- Enter sends; Shift+Enter adds a line break. IME composition does not accidentally submit.
+- Up to five attachments, 10 MiB each, can be selected or dropped into the composer. The demo uses names/metadata only: it never reads file content or uploads files. Sending clears the pending attachments.
+- Options change template selection, phrasing and optional outlines. Model names are preset labels only. Temperature is displayed but does not control a real sampler; length choices are template hints, not enforced sentence budgets.
+- Replies render Markdown/GFM. Embedded images are replaced with a label to avoid automatic external image requests; links open only when clicked.
+- Everything lives in React state for the current page session. Refresh clears the conversation and options.
 
-### Requirements
-- **Node.js 18+** (LTS recommended)
-- npm or Yarn
+## Small architecture, deliberate boundary
 
-No environment variables are required. All responses are generated locally.
+```mermaid
+flowchart LR
+  C[Composer and attachment metadata] --> A[App message state]
+  O[Options dialog] --> A
+  A --> T[Local AIAgent template selector]
+  T --> M[Markdown message bubble]
+```
 
-### Install and Run
-1. Install dependencies
-2. Start the dev server
-3. Open the app at the printed local URL
+`src/App.tsx` owns messages and the simulated typing delay. `MessageComposer` handles draft input and file limits; `OptionsPanel` exposes settings through labeled controls. `src/lib/aiAgent.ts` selects canned response styles from keywords/options and a random fallback. Despite its class name, it is not an agent runtime: it has no tools, retrieval, memory service or provider integration.
 
-Common commands:
+The amber theme uses Tailwind, Radix-based dialog controls, Lucide icons and Framer Motion. The mobile layout uses dynamic viewport height to keep the composer usable with changing browser chrome; mobile keyboard behavior still needs device testing.
 
-| Command | Description |
-| ------- | ----------- |
-| `npm install` | Installs project dependencies (use `yarn install` if you prefer Yarn). |
-| `npm run dev` | Starts the development server with Vite. |
-| `npm run build` | Builds the production app to `dist/`. |
-| `npm run preview` | Serves the production build locally. |
-| `npm run lint` | Runs ESLint on the codebase. |
+## Verification and remaining work
 
-Yarn equivalents: `yarn`, `yarn dev`, `yarn build`, `yarn preview`, `yarn lint`.
+The TypeScript/Vite production build and ESLint pass. A Chrome/Playwright check exercised a scripted reply, filename-only attachment, response options, blocked Markdown image fetching and desktop/390px layouts. No external requests or page errors occurred in that synthetic run; both screenshots above come from it.
 
+There is no committed unit-test runner yet; the browser verification was performed separately. The production bundle is about 562 kB before gzip and emits a chunk-size warning. Useful next steps are lazy-loading the options/Markdown paths, reproducible template tests, reduced-motion testing and message cancellation. A real model integration would require a server-side credential boundary, streaming/error handling and clear file-consent behavior rather than adding a key to this browser app.
 
-## 4. Basic Flow of the Application
-
-### How it works
-1. `main.tsx` mounts `App` into `#root`.
-2. `App` initializes with a friendly AI greeting in `messages` and renders:
-   - A header with an online indicator and the `OptionsPanel`.
-   - A scrollable conversation area of `MessageBubble` components.
-   - The `MessageComposer` at the bottom for input and attachments.
-3. When the user sends a message:
-   - `handleSendMessage` appends the user message and enables a typing indicator.
-   - After a short random delay, `AIAgent.generateResponse(message, options, attachments)` returns an `AIResponse`.
-   - The AI message is appended, typing indicator is cleared, and the list auto‑scrolls.
-4. AI messages render through `MarkdownRenderer` to support lists, code blocks, and links.
-
-### Component interactions and controls
-- **Options affect output**:
-  - **Response Length**: can bias style (e.g., short → quip, long → summary with more detail).
-  - **Model Choice**: referenced in the response preamble (no backend call).
-  - **Tone** and **Reading Level**: adjust phrasing and depth of the base response.
-  - **Temperature**: represented as a numeric control; in a real model this would influence randomness.
-  - **Include Outline**: adds a bullet outline to summary‑style responses.
-- **Attachments (max 5, ≤10MB each)**: listed above the composer; their presence steers the agent toward a summary and mentions filenames.
-- **Keyboard**: Enter to send, Shift+Enter for newline.
-
-
-## 5. Future Enhancements
-
-- **Real model integration**: Connect to providers (OpenAI, Anthropic, Google) with streaming tokens and error handling.
-- **Streaming UI**: Render partial tokens with a live typing indicator and cancelation.
-- **Multimodal content**: Support displaying and sending images, audio, and rich previews for attachments.
-- **Persistence & sessions**: Save conversations locally (IndexedDB) or in a backend; allow multiple threads.
-- **Advanced controls**: System prompts, top‑p, frequency/presence penalties, function/tool calling, and JSON modes.
-- **Better UX/animations**: Message enter/exit transitions, auto‑scroll tuning, and reduced layout shift.
-- **Accessibility (a11y)**: Improved focus management, landmarks, and ARIA for all interactive controls.
-- **Internationalization**: i18n for UI and date/number formatting.
-- **Testing**: Unit tests for `AIAgent` and components; E2E happy‑path flows.
-- **Export/share**: Export conversation to Markdown/JSON; shareable links.
-- **Theming**: Light/dark/system themes with Tailwind tokens.
-
----
-
-If you plan to integrate a real API later, start by replacing `AIAgent.generateResponse` with an async call, return tokens incrementally, and keep the rest of the UI and state management intact.
+This is a frontend prototype for portfolio balance, not evidence of model quality, document analysis or production agent engineering.

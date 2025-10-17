@@ -27,7 +27,7 @@ function App() {
     {
       id: "1",
       content:
-        "Hello! I'm your AI assistant. I can help you with various topics and questions. Feel free to ask me anything!",
+        "This is a local chat UI demo. Replies are scripted, not model-generated. Try a message and adjust the options; attached files are listed by name, never read or uploaded.",
       sender: "ai",
       timestamp: new Date(),
     },
@@ -91,12 +91,12 @@ function App() {
                 <Bot className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
               </div>
               <h1 className="text-sm sm:text-lg font-bold text-amber-800">
-                AI
+                Chat UI demo
               </h1>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-amber-700 font-medium">Online</span>
+              <span className="text-sm text-amber-700 font-medium">Local demo</span>
             </div>
             <div>
               <OptionsPanel options={options} onOptionsChange={setOptions} />
@@ -105,7 +105,7 @@ function App() {
         </div>
       </motion.header>
 
-      <div className="max-w-4xl mx-auto h-screen flex flex-col bg-amber-50 rounded-t-2xl border border-amber-200">
+      <div className="max-w-4xl mx-auto h-[100dvh] flex flex-col bg-amber-50 rounded-t-2xl border border-amber-200">
         <div className="flex-1 overflow-y-auto p-3 sm:p-4 pt-16 space-y-4 sm:space-y-6 scrollbar-hide relative z-10">
           <AnimatePresence>
             {messages.map((message, index) => (

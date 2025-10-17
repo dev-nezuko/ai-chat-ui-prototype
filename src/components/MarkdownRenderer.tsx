@@ -21,6 +21,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
+          img: () => <span>[Image omitted in local demo]</span>,
           code: ({ className, children, ...props }: CodeProps) => {
             const isInline = !className?.includes("language-");
             if (isInline) {

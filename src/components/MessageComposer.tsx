@@ -43,14 +43,14 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
       e.preventDefault();
       handleSubmit(e);
     }
   };
 
   const handleFileSelect = (files: FileList | null) => {
-    if (!files) return;
+    if (!files || disabled) return;
 
     const newAttachments: FileAttachmentType[] = [];
     const maxFiles = 5;
@@ -135,6 +135,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
         )}
       </AnimatePresence>
 
+      <p className="px-4 pt-2 text-xs text-amber-800">Local scripted replies · Files are not read or uploaded · Session only</p>
       <form onSubmit={handleSubmit} className="p-4 sm:p-6">
         <div
           className={`relative rounded-2xl border transition-colors p-4 ${
@@ -156,7 +157,8 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type your message..."
+            aria-label="Message"
+            placeholder="Try a message for the scripted demo..."
             className="h-[50px] sm:h-[60px] max-h-[200px] resize-y border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 pr-16 sm:pr-20 pl-2 sm:pl-3 py-2 sm:py-3 leading-normal placeholder:text-amber-800/70 text-amber-900 font-medium"
             style={{
               backdropFilter: "blur(10px)",
@@ -179,6 +181,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
               type="button"
               variant="ghost"
               size="icon"
+              aria-label="Attach files"
               onClick={openFileDialog}
               disabled={disabled || attachments.length >= 5}
               className="h-7 w-7 sm:h-8 sm:w-8 text-amber-700/90 hover:text-amber-900 hover:bg-white/25 transition-all duration-200 rounded-full"
@@ -192,6 +195,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
 
             <Button
               type="submit"
+              aria-label="Send message"
               disabled={!message.trim() || disabled}
               className="h-7 sm:h-8 px-2 sm:px-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg rounded-full border border-amber-400/20"
               style={{

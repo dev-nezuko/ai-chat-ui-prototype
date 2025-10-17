@@ -159,7 +159,7 @@ export class AIAgent {
       baseResponse += "From a technical perspective, ";
     }
 
-    baseResponse += `Using the ${model} model, `;
+    baseResponse += `Scripted demo (preset label: ${model}), `;
 
     if (options.readingLevel === "beginner") {
       baseResponse += "I'll explain this in simple terms. ";
@@ -179,7 +179,7 @@ export class AIAgent {
     let response = baseResponse;
 
     if (hasAttachments) {
-      response += `I've reviewed the ${attachments.length} file(s) you've attached: `;
+      response += `Only filenames are available in this demo; file contents were not read. Attached ${attachments.length} file(s): `;
       response += attachments.map((f) => f.name).join(", ") + ". ";
     }
 

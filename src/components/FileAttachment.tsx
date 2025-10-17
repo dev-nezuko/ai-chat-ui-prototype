@@ -44,6 +44,7 @@ export const FileAttachment: React.FC<FileAttachmentProps> = ({
         </span>
       </div>
       <button
+        aria-label={`Remove ${attachment.name}`}
         onClick={() => onRemove(attachment.id)}
         className="ml-2 p-1 hover:bg-amber-200/40 rounded transition-colors"
       >
